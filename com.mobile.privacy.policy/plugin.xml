@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="com.mobile.privacy.policy.PolicyBuilder"
+         name="Policy Builder"
+         point="org.eclipse.core.resources.builders">
+         <builder>
+         	<run class="com.mobile.privacy.policy.PolicyBuilder" />
+         </builder>
+   </extension>
+	<extension point="org.eclipse.ui.commands">  
+	    <command 
+	    	defaultHandler="com.mobile.privacy.policy.commands.AddBuilder" 
+	    	id="com.mobile.privacy.policy.commands.AddBuilder" 
+	    	name="Add Policy Builder">  
+	    </command>  
+	    <command 
+	    	defaultHandler="com.mobile.privacy.policy.commands.RemoveBuilder" 
+	    	id="com.mobile.privacy.policy.commands.RemoveBuilder" 
+	    	name="Remove Policy Builder">  
+	    </command>   
+	</extension>
+	<extension point="org.eclipse.ui.menus">  
+	    <menuContribution allPopups="false" locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">  
+	        <command commandId="com.mobile.privacy.policy.commands.AddBuilder" style="push">  
+	        </command>  
+	        <command commandId="com.mobile.privacy.policy.commands.RemoveBuilder" style="push">  
+	        </command>  
+	    </menuContribution>  
+	</extension> 
+</plugin>
