@@ -1,14 +1,13 @@
 package com.mobile.privacy.policy.parser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -23,6 +22,10 @@ public class PrivateDataVisitor extends ASTVisitor {
     
     public PrivateDataVisitor() {
         privateVars = new HashMap<IBinding, Set<String>>();
+    }
+    
+    public Map<IBinding, Set<String>> getPrivateVars() {
+        return privateVars;
     }
     
     @Override
@@ -66,27 +69,54 @@ public class PrivateDataVisitor extends ASTVisitor {
     
     @Override
     public boolean visit(MethodInvocation method) {
-        if(dataSource != null) {
-            if(method.getName().getFullyQualifiedName().equals("getSystemService") &&
-                method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("location") || 
-                method.arguments().get(0).toString().equals("Context.LOCATION_SERVICE"))){
-                 dataSource.add("LOCATION");
-                 return false;
-            }
-            if(method.getName().getFullyQualifiedName().equals("query") &&
-               method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("(Uri.parse(\"content://sms/inbox\")"))) {
-                   dataSource.add("SMS_READ");
-            }
-            if(method.getName().getFullyQualifiedName().equals("getDefault") &&
-               method.getExpression() != null && method.getExpression().equals("SmsManager")) {
-                   dataSource.add("SMS_WRITE");
-            }
-            if(method.getName().getFullyQualifiedName().equals("query") &&
-               method.arguments().size() > 0 && method.arguments().get(0).toString().equals("ContactsContract.Contacts.CONTENT_URI")) {
-                   dataSource.add("READ_CONTACTS");
-            }
+        boolean parsePrivateData = dataSource == null;
+        if(parsePrivateData) {
+            vars = new HashSet<IBinding>();
+            dataSource = new HashSet<String>();
         }
-        return true;
+        /*
+        System.out.println(method.resolveMethodBinding().getName());
+        System.out.println(method.resolveMethodBinding().getDeclaringClass().getName());
+        System.out.println(method.resolveMethodBinding().getDeclaringClass().getPackage().getName());
+        System.out.println(method.getName().getFullyQualifiedName());
+        */
+        //Check for methods
+        if(method.getName().getFullyQualifiedName().equals("getSystemService") &&
+            method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("location") || 
+            method.arguments().get(0).toString().equals("Context.LOCATION_SERVICE"))){
+             dataSource.add("LOCATION");
+             return false;
+        }
+        if(method.getName().getFullyQualifiedName().equals("query") &&
+           method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("(Uri.parse(\"content://sms/inbox\")"))) {
+               dataSource.add("SMS_READ");
+        }
+        if(method.getName().getFullyQualifiedName().equals("getDefault") &&
+           method.getExpression() != null && method.getExpression().equals("SmsManager")) {
+               dataSource.add("SMS_WRITE");
+        }
+        if(method.getName().getFullyQualifiedName().equals("query") &&
+           method.arguments().size() > 0 && method.arguments().get(0).toString().equals("ContactsContract.Contacts.CONTENT_URI")) {
+               dataSource.add("READ_CONTACTS");
+        }
+        
+        if(method.getExpression() != null)
+            method.getExpression().accept(this);
+        
+        for(Object o : method.arguments()) {
+            ((Expression) o).accept(this);
+        }
+        
+        if(parsePrivateData) {
+            if(!dataSource.isEmpty()) {
+                for(IBinding var : vars) {
+                   privateVars.put(var, dataSource);
+                }
+            }
+            vars = null;
+            dataSource = null;
+        }
+        return false;
     }
     
     @Override

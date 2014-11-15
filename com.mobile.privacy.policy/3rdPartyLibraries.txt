@@ -1,0 +1,246 @@
+Admob-Targeted ads
+Facebook-Social networking service
+Flurry-Mobile analytics
+Twitter4j-Social networking service
+Jsoup-Utility
+Revmob-Targeted ads
+Millennialmedia-Targeted ads
+Nostra13-Utility
+Inmobi-Targeted ads
+Acra-Utility
+Unity3d-Game engine
+Oauth-Utility
+Ksoap2-Utility
+Chartboost-Targeted ads
+Paypal-Payment
+Bugsense-Utility
+Qbiki-Development aid
+Loopj-Utility
+Adobe-Utility
+Phonegap-Utility
+Biznessapps-Development aid
+Smaato-Targeted ads
+Codehaus-Utility
+Mopub-Targeted ads
+Urbanairship-Payment
+Kawa-Utility
+Adwhirl-Targeted ads
+Appbrain-Utility
+Umeng-Mobile analytics
+Adfonic-Targeted ads
+Titanium-Development aid
+Appcelerator-Utility
+Ansca-Utility
+Tapjoy-Targeted ads
+Applovin-Targeted ads
+Amazon-Utility
+Badlogic-Game engine
+Jumptap-Targeted ads
+Crittercism-Mobile analytics
+Mobclix-Targeted ads
+Playhaven-Targeted ads
+Inneractive-Targeted ads
+Appmk-Utility
+Tencent-Social networking service
+Andengine-Social gaming
+Baidu-Search engine
+Appyet-Development aid
+Osmdroid-Utility
+Anywheresoftware-Utility
+Scribe-Content provider
+Heyzap-Social gaming
+Localytics-Mobile analytics
+Anddev-Utility
+Mixpanel-Mobile analytics
+Greystripe-Targeted ads
+Amazonaws-Utility
+Qualcomm-Utility
+Cocos2dx-Game engine
+Roboguice-Utility
+Mozilla-Utility
+Springframework-Utility
+Nuance-Utility
+Mobfox-Targeted ads
+Openfeint-Game engine
+Apsalar-Targeted ads
+Actionbarsherlock-Utility
+Airpush-Targeted ads
+Admarvel-Targeted ads
+Mdotm-Targeted ads
+Github-Utility
+Tapfortap-Targeted ads
+Apperhand-Targeted ads
+Scoreloop-Social gaming
+Comscore-Mobile analytics
+Mediba-Targeted ads
+Weibo-Social networking service
+Twitter-Social networking service
+Zestadz-Targeted ads
+Mcsoxford-Utility
+Nbpcorp-Targeted ads
+Adknowledge-Targeted ads
+Mobclick-Mobile analytics
+Zong-Payment
+Htmlcleaner-Utility
+Mapsforge-Content provider
+Socialize-Social networking service
+Wiyun-Social gaming
+Dom4j-Utility
+Cauly-Targeted ads
+Bouncycastle-Utility
+Smartadserver-Targeted ads
+Ormma-Targeted ads
+Winterwell-Social networking service
+Sponsorpay-Targeted ads
+Omniture-Mobile analytics
+Kenai-Development aid
+Dropbox-Utility
+Leadbolt-Targeted ads
+Fedorvlasov-Utility
+Mocoplex-Targeted ads
+Brightcove-Content provider
+Alipay-Payment
+Greendroid-Development aid
+Ccil-Utility
+Adwo-Targeted ads
+Commonsware-Utility
+Aviary-Utility
+Vpon-Targeted ads
+Swarmconnect-Targeted ads
+Spongycastle-Utility
+Iflytek-Utility
+Pontiflex-Targeted ads
+Mobisage-Targeted ads
+Papaya-Social gaming
+Xtify-Targeted ads
+Burstly-Mobile analytics
+Ideaworks3d-Utility
+Nullwire-Utility
+Inapp-Utility
+Getjar-Secondary market
+Webtrends-Mobile analytics
+Livestream-Content provider
+Vervewireless-Targeted ads
+Gamesalad-Game engine
+Adchina-Targeted ads
+Yume-Targeted ads
+Rosaloves-Utility
+Nexage-Targeted ads
+Googlecode-Development aid
+Ngigroup-Targeted ads
+Cocos2d-Game engine
+Jcifs-Utility
+Madhouse-Targeted ads
+Sonicnotify-Targeted ads
+Everbadge-Targeted ads
+Pjsip-Utility
+Fmod-Utility
+Bumptech-Utility
+Qwapi-Targeted ads
+Medialets-Targeted ads
+Renren-Social networking service
+Eclipse-Utility
+Vdopia-Targeted ads
+Rhythmnewmedia-Targeted ads
+Suizong-Targeted ads
+Adview-Targeted ads
+Devsmart-Ui component
+Wooboo-Targeted ads
+Twitterapime-Social networking service
+Jboss-Utility
+Noqoush-Targeted ads
+Opencv-Utility
+Fiksu-Targeted ads
+Adserver-Targeted ads
+Microsoft-Utility
+Admogo-Targeted ads
+Groovy-Development aid
+Htmlparser-Utility
+Kuguo-Targeted ads
+Mads-Targeted ads
+Jcraft-Utility
+Restlet-Utility
+Ubikod-Mobile analytics
+Widespace-Targeted ads
+Jakewharton-Ui component
+Yicha-Targeted ads
+Casee-Targeted ads
+Energysource-Targeted ads
+Wqmobile-Targeted ads
+Fortumo-Payment
+Kuad-Targeted ads
+Skyhookwireless-Utility
+Adcenix-Targeted ads
+Wutka-Utility
+Openintents-Game engine
+Winad-Targeted ads
+Utilities-Utility
+Mapabc-Content provider
+Guohead-Targeted ads
+Db4o-Utility
+Ignitevision-Mobile analytics
+Osgi-Utility
+Gfan-Secondary market
+Apprupt-Targeted ads
+Lmmob-Targeted ads
+Fractalist-Targeted ads
+Mortbay-Utility
+Maps-Utility
+Moolah-Targeted ads
+Radiumone-Targeted ads
+Push-Utility
+Donson-Targeted ads
+Exchange-Utility
+Transpera-Targeted ads
+Andnav-Content provider
+Oneriot-Targeted ads
+Proguard-Utility
+Mopay-Payment
+Donple-Targeted ads
+Viewpagerindicator-Ui component
+Stericson-Utility
+Adzhidian-Targeted ads
+Simpleframework-Utility
+Joelapenna-Social networking service
+Quipper-Content provider
+Sellaring-Targeted ads
+Hamcrest-Utility
+Yuku-Utility
+Thehttpclient-Utility
+Ximad-Secondary market
+Motorola-Utility
+Adpooh-Targeted ads
+Zongfuscated-Payment
+Intuit-Payment
+Kankan-Ui component
+Jdom-Utility
+Novell-Development aid
+Min3d-Utility
+Relaxng-Utility
+Afzkl-Utility
+Slf4j-Utility
+Ocpsoft-Utility
+J256-Utility
+Helllabs-Utility
+Apwidgets-Utility
+Imagezoom-Utility
+Onbarcode-Utility
+Joda-Utility
+Mobiledatagroup-Content provider
+Jaxen-Utility
+Tecnick-Utility
+Kobjects-Utility
+Achartengine-Utility
+Lgpl-Utility
+Appmakr-Utility
+Spreada-Mobile analytics
+Aspectj-Utility
+Objenesis-Utility
+Metalev-Utility
+Yaml-Utility
+Jbox2d-Utility
+Scoreninja-Social gaming
+Jaudiotagger-Utility
+Libsvg-Utility
+Taptwo-Ui component
+Easymock-Ui component

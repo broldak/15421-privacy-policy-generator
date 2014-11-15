@@ -21,6 +21,10 @@ public class INetConnectionVisitor extends ASTVisitor {
         
     }
     
+    public Set<IBinding> getInetVars() {
+        return inetVars;
+    }
+    
     @Override
     public boolean visit(Assignment node) {
         vars = new HashSet<IBinding>();
@@ -60,7 +64,8 @@ public class INetConnectionVisitor extends ASTVisitor {
     
     @Override
     public boolean visit(MethodInvocation method) {
-        if(method.getName().equals("openConnection")) {
+        System.out.println(method.getName());
+        if(method.getName().toString().equals("openConnection")) {
             dataSink = true;
         }
         return true;
