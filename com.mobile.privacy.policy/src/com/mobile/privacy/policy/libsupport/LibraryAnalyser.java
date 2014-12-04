@@ -63,7 +63,7 @@ public class LibraryAnalyser {
                 return e;
             }
         }
-        
-        return null;
+        libToUtil.put(packageName, "UNKNOWN");
+        return lookupPackgeName(packageName);
     }
 }
