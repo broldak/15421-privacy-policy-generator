@@ -16,10 +16,19 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.Interpreter;
 
+import com.mobile.privacy.policy.parser.ClassResolver;
+
 public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
 
-    public DataInterpreter() {
+    private MethodResolver methodResolver;
+    private FieldPool fieldPool;
+    private int idx;
+    
+    public DataInterpreter(MethodResolver methodResolver, FieldPool fieldPool) {
         super(ASM5);
+        this.methodResolver = methodResolver;
+        this.fieldPool = fieldPool;
+        idx = 0;
     }
     
     protected DataInterpreter(final int api) {
@@ -28,12 +37,15 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
     
     @Override
     public DataValue newValue(final Type type) {
-        return typeToDataValue(type);
+        DataValue newVal = typeToDataValue(type);
+        if(type!= null && newVal != null)
+            newVal.argValues.add(idx++);
+        return newVal;
     }
     
     public static DataValue typeToDataValue(final Type type) {
         if (type == null) {
-            return NativeValue.EMPTY_VALUE;
+            return DataValue.EMPTY_VALUE;
         }
         switch (type.getSort()) {
         case Type.VOID:
@@ -44,13 +56,13 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case Type.SHORT:
         case Type.INT:
         case Type.FLOAT:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case Type.LONG:
         case Type.DOUBLE:
-            return NativeValue.DOUBLE_VALUE;
+            return DataValue.DOUBLE_VALUE;
         case Type.ARRAY:
         case Type.OBJECT:
-            return new SimpleObjectValue();
+            return new DataValue();
         default:
             throw new Error("Internal error");
         }
@@ -61,53 +73,44 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
             throws AnalyzerException {
         switch (insn.getOpcode()) {
         case ACONST_NULL:
-            return new SimpleObjectValue();
+            return new DataValue();
         case ICONST_M1:
-            return new NativeValue(1, new Integer(-1));
         case ICONST_0:
-            return new NativeValue(1, new Integer(0));
         case ICONST_1:
-            return new NativeValue(1, new Integer(1));
         case ICONST_2:
-            return new NativeValue(1, new Integer(2));
         case ICONST_3:
-            return new NativeValue(1, new Integer(3));
         case ICONST_4:
-            return new NativeValue(1, new Integer(4));
         case ICONST_5:
-            return new NativeValue(1, new Integer(5));
-        case LCONST_0:
-            return new NativeValue(2, new Long(0));
-        case LCONST_1:
-            return new NativeValue(2, new Long(1));
         case FCONST_0:
         case FCONST_1:
         case FCONST_2:
-            return  NativeValue.WORD_VALUE;
+            return  DataValue.WORD_VALUE;
+        case LCONST_0:
+        case LCONST_1:
         case DCONST_0:
         case DCONST_1:
-            return  NativeValue.DOUBLE_VALUE;
+            return  DataValue.DOUBLE_VALUE;
         case BIPUSH:
         case SIPUSH:
-            return new NativeValue(1,new Integer(((IntInsnNode) insn).operand));
+            return DataValue.WORD_VALUE;
         case LDC:
             Object cst = ((LdcInsnNode) insn).cst;
             if (cst instanceof Integer) {
-                return new NativeValue(1,cst);
+                return DataValue.WORD_VALUE;
             } else if (cst instanceof Float) {
-                return NativeValue.WORD_VALUE;
+                return DataValue.WORD_VALUE;
             } else if (cst instanceof Long) {
-                return new NativeValue(2,cst);
+                return DataValue.DOUBLE_VALUE;
             } else if (cst instanceof Double) {
-                return NativeValue.DOUBLE_VALUE;
+                return DataValue.DOUBLE_VALUE;
             } else if (cst instanceof String) {
-                SimpleObjectValue val = new SimpleObjectValue();
+                DataValue val = new DataValue();
                 val.stringValues.add((String)cst);
                 return val;
             } else if (cst instanceof Type) {
-                return new SimpleObjectValue();
+                return new DataValue();
             } else if (cst instanceof Handle) {
-                return new SimpleObjectValue();
+                return new DataValue();
             } else {
                 throw new IllegalArgumentException("Illegal LDC constant "
                         + cst);
@@ -117,10 +120,9 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case GETSTATIC:
             FieldInsnNode node = (FieldInsnNode) insn;
             Handle handle = new Handle(Opcodes.H_GETSTATIC, node.owner, node.name, node.desc);
-            //todo
-            return newValue(Type.getType(((FieldInsnNode) insn).desc));
+            return fieldPool.getField(handle);
         case NEW:
-            return new SimpleObjectValue();
+            return new DataValue();
         default:
             throw new Error("Internal error.");
         }
@@ -148,7 +150,7 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case I2F:
         case L2F:
         case D2F:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case LNEG:
         case I2L:
         case F2L:
@@ -157,7 +159,7 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case I2D:
         case L2D:
         case F2D:
-            return NativeValue.DOUBLE_VALUE;
+            return DataValue.DOUBLE_VALUE;
         case IFEQ:
         case IFNE:
         case IFLT:
@@ -171,24 +173,28 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case FRETURN:
         case DRETURN:
         case ARETURN:
+            return null;
         case PUTSTATIC:
-            //TODO put static
+            FieldInsnNode node = (FieldInsnNode) insn;
+            Handle handle = new Handle(Opcodes.H_GETSTATIC, node.owner, node.name, node.desc);
+            fieldPool.setField(handle, value);
             return null;
         case GETFIELD:
-            //TODO get static
-            return new SimpleObjectValue();
+            FieldInsnNode nodeF = (FieldInsnNode) insn;
+            Handle handleF = new Handle(Opcodes.H_GETFIELD, nodeF.owner, nodeF.name, nodeF.desc);
+            return fieldPool.getField(handleF);
         case NEWARRAY:
-            return new SimpleObjectValue();
+            return new DataValue();
         case ANEWARRAY:
-            return new SimpleObjectValue();
+            return new DataValue();
         case ARRAYLENGTH:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case ATHROW:
             return null;
         case CHECKCAST:
             return value;
         case INSTANCEOF:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case MONITORENTER:
         case MONITOREXIT:
         case IFNULL:
@@ -225,7 +231,7 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case FMUL:
         case FDIV:
         case FREM:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case LALOAD:
         case LADD:
         case LSUB:
@@ -244,17 +250,15 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case DMUL:
         case DDIV:
         case DREM:
-            return NativeValue.DOUBLE_VALUE;
+            return DataValue.DOUBLE_VALUE;
         case AALOAD:
-            System.out.println("CALLED");
-            System.out.println(value1);
             return value1;
         case LCMP:
         case FCMPL:
         case FCMPG:
         case DCMPL:
         case DCMPG:
-            return NativeValue.WORD_VALUE;
+            return DataValue.WORD_VALUE;
         case IF_ICMPEQ:
         case IF_ICMPNE:
         case IF_ICMPLT:
@@ -263,8 +267,13 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
         case IF_ICMPLE:
         case IF_ACMPEQ:
         case IF_ACMPNE:
+            return null;
         case PUTFIELD:
-            //TODO do something with this
+            FieldInsnNode node = (FieldInsnNode) insn;
+            Handle handle = new Handle(Opcodes.H_GETFIELD, node.owner, node.name, node.desc);
+            fieldPool.setField(handle, value2);
+            if(value1.isRef() && value2.isRef())
+                value1.merge(value2);
             return null;
         default:
             throw new Error("Internal error.");
@@ -296,13 +305,34 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
             final List<? extends DataValue> values) throws AnalyzerException {
         int opcode = insn.getOpcode();
         if (opcode == MULTIANEWARRAY) {
-            return newValue(Type.getType(((MultiANewArrayInsnNode) insn).desc));
+            return typeToDataValue(Type.getType(((MultiANewArrayInsnNode) insn).desc));
         } else if (opcode == INVOKEDYNAMIC) {
-            return newValue(Type
-                    .getReturnType(((InvokeDynamicInsnNode) insn).desc));
+            System.out.println("Warning, unsupported operation INVOKEDYNAMIC");
+            return typeToDataValue(Type.getReturnType(((InvokeDynamicInsnNode) insn).desc));
         } else {
-            return newValue(Type.getReturnType(((MethodInsnNode) insn).desc));
+            MethodInsnNode node = (MethodInsnNode) insn;
+            Handle handle;
+            switch(insn.getOpcode()) {
+            case INVOKEVIRTUAL:
+                handle = new Handle(Opcodes.H_INVOKEVIRTUAL,node.owner,node.name,node.desc);
+                break;
+            case INVOKESPECIAL:
+                handle = new Handle(Opcodes.H_INVOKESPECIAL,node.owner,node.name,node.desc);
+                break;
+            case INVOKESTATIC:
+                handle = new Handle(Opcodes.H_INVOKESTATIC,node.owner,node.name,node.desc);
+                break;
+            case INVOKEINTERFACE:
+                handle = new Handle(Opcodes.H_INVOKEINTERFACE,node.owner,node.name,node.desc);
+                break;
+            default:
+                System.out.println("Invalid Instructions");
+                handle = null;
+            }
+            DataValue ret = methodResolver.execute(handle,(List<DataValue>) values);
+            return ret;
         }
+        
     }
     
     @Override
@@ -313,9 +343,9 @@ public class DataInterpreter extends Interpreter<DataValue> implements Opcodes {
     
     @Override
     public DataValue merge(final DataValue v, final DataValue w) {
-        if(w == NativeValue.EMPTY_VALUE)
+        if(w == DataValue.EMPTY_VALUE)
             return v;
-        if(v == NativeValue.EMPTY_VALUE)
+        if(v == DataValue.EMPTY_VALUE)
             return w;
         
         if(v != null)

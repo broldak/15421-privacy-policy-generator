@@ -50,16 +50,16 @@ public class PrivateMethodAnalyzer {
                     dataValue = DataInterpreter.typeToDataValue(Type.getType(desc));
                 }
                 else if(value instanceof Integer) {
-                    dataValue = new NativeValue(1,value);
+                    dataValue = DataValue.WORD_VALUE;
                 } else if (value instanceof Float) {
-                    dataValue = NativeValue.WORD_VALUE;
+                    dataValue = DataValue.WORD_VALUE;
                 } else if (value instanceof Long) {
-                    dataValue = new NativeValue(2,value);
+                    dataValue = DataValue.DOUBLE_VALUE;
                 } else if (value instanceof Double) {
-                    dataValue = NativeValue.DOUBLE_VALUE;
+                    dataValue = DataValue.DOUBLE_VALUE;
                 } else if (value instanceof String) {
-                    dataValue = new SimpleObjectValue();
-                    ((SimpleObjectValue) dataValue).stringValues.add((String)value);
+                    dataValue = new DataValue();
+                    dataValue.stringValues.add((String)value);
                 }
                 
                 fieldPool.initField(handle, dataValue);
@@ -80,11 +80,15 @@ public class PrivateMethodAnalyzer {
                     
                     @Override
                     public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-                        if(name.contains("getExternalStoragePublicDirectory")) {
-                            System.out.println("WRITE");
+                        if(name.contains("getExternalStorage") || name.contains("getExternalFilesDir")) {
+                            cr.addUse("EXTERNAL_WRITE");
+                        }
+                        if(owner.startsWith("java/net") ||
+                           owner.startsWith("org/apache/http")) {
+                           cr.addUse("INTERNET");
                         }
                         if(owner.equals("android/hardware/Camera") || owner.contains("android/hardware/camera2")) {
-                            System.out.println("CAMERA");
+                            cr.addUse("CAMERA");
                             /*
                             if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                 if(results.get("CAMERA") == null) {
@@ -94,7 +98,7 @@ public class PrivateMethodAnalyzer {
                             }
                             */
                         } else if(owner.equals("android/location/LocationManager")) {
-                            System.out.println("LOCATION");
+                            cr.addUse("LOCATION");
                             /*
                             if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                 if(results.get("LOCATION") != null) {
@@ -104,7 +108,7 @@ public class PrivateMethodAnalyzer {
                             }
                             */
                         } else if(owner.equals("android/telephony/SmsManager")) {
-                            System.out.println("SMS_SEND");
+                            cr.addUse("SMS_SEND");
                             /*
                             if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                 if(results.get("SMS_SEND") == null) {
@@ -119,7 +123,7 @@ public class PrivateMethodAnalyzer {
                     @Override
                     public void visitFieldInsn(int opcode, String owner, String name, String desc) {
                         if(owner.contains("android/provider/ContactsContract")) {
-                            System.out.println("CONTACTS");
+                            cr.addUse("CONTACTS");
                             /*
                             if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                 if(results.get("CONTACTS") == null) {
@@ -130,7 +134,8 @@ public class PrivateMethodAnalyzer {
                             */
                         }
                         else if(owner.contains("android/provider/MediaStore/Images")) {
-                            System.out.println("IMAGES");
+                            cr.addUse("IMAGES");
+                            //System.out.println("IMAGES");
                             /*
                             if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                 if(results.get("IMAGE_SEND") == null) {
@@ -147,7 +152,7 @@ public class PrivateMethodAnalyzer {
                         if(cst instanceof String) {
                             String con = (String) cst;
                             if(con.contains("content://sms/inbox")) {
-                                System.out.println("sms read");
+                                cr.addUse("SMS_READ");
                                 /*
                                 if(!la.lookupPackgeName(className).getValue().equals("ANDROID")) {
                                     if(results.get("SMS_READ") == null) {
@@ -161,7 +166,7 @@ public class PrivateMethodAnalyzer {
                         }
                     }
                 };
-                return null; //mv;
+                return mv;
             }
 
             /**

@@ -12,16 +12,19 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class PrivateDataVisitor extends ASTVisitor {
 
+    public Set<String> dataUse;
     private Set<String> dataSource = null;
     private Set<IBinding> vars = null;
     private Map<IBinding, Set<String>> privateVars;
     
     public PrivateDataVisitor() {
         privateVars = new HashMap<IBinding, Set<String>>();
+        dataUse = new HashSet<String>();
     }
     
     public Map<IBinding, Set<String>> getPrivateVars() {
@@ -66,6 +69,16 @@ public class PrivateDataVisitor extends ASTVisitor {
         
         return false;
     }
+    @Override
+    public boolean visit(StringLiteral s) {
+        if(s.getLiteralValue().contains("content://sms/inbox")) {
+            dataUse.add("SMS_READ");
+            if(dataSource != null) {
+                dataSource.add("SMS_READ");
+            }
+        }
+        return true;
+    }
     
     @Override
     public boolean visit(MethodInvocation method) {
@@ -85,21 +98,13 @@ public class PrivateDataVisitor extends ASTVisitor {
             method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("location") || 
             method.arguments().get(0).toString().equals("Context.LOCATION_SERVICE"))){
              dataSource.add("LOCATION");
+             dataUse.add("LOCATION");
              return false;
         }
-        if(method.getName().getFullyQualifiedName().equals("query") &&
-           method.arguments().size() > 0 && (method.arguments().get(0).toString().equals("(Uri.parse(\"content://sms/inbox\")"))) {
-               dataSource.add("SMS_READ");
-        }
-        if(method.getName().getFullyQualifiedName().equals("getDefault") &&
-           method.getExpression() != null && method.getExpression().equals("SmsManager")) {
+        if(method.resolveMethodBinding() != null && method.resolveMethodBinding().getDeclaringClass().getName().contains("SmsManager")) {
                dataSource.add("SMS_WRITE");
+               dataUse.add("SMS_WRITE");
         }
-        if(method.getName().getFullyQualifiedName().equals("query") &&
-           method.arguments().size() > 0 && method.arguments().get(0).toString().equals("ContactsContract.Contacts.CONTENT_URI")) {
-               dataSource.add("READ_CONTACTS");
-        }
-        
         if(method.getExpression() != null)
             method.getExpression().accept(this);
         
@@ -133,6 +138,16 @@ public class PrivateDataVisitor extends ASTVisitor {
     
     @Override
     public boolean visit(FieldAccess fieldVar) {
+        if(fieldVar.resolveFieldBinding().getDeclaringClass().getName().contains("Camera")) {
+            dataUse.add("CAMERA");
+        }
+        if(fieldVar.resolveFieldBinding().getDeclaringClass().getPackage().getName().contains("ContactsContract")) {
+            dataUse.add("CONTACTS");
+        }
+        if(fieldVar.resolveFieldBinding().getDeclaringClass().getPackage().getName().contains("MediaStore.Images")) {
+            dataUse.add("IMAGE_SEND");
+        }
+        
         if(vars != null && dataSource != null) {
             if(privateVars.containsKey(fieldVar.resolveFieldBinding())) {
                 dataSource.addAll(privateVars.get(fieldVar.resolveFieldBinding()));
